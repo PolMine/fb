@@ -4,7 +4,7 @@
 \alias{fp_read_csv}
 \title{Read Facepager CSV files}
 \usage{
-fp_read_csv(x)
+fp_read_csv(x, cols = fp_colnames)
 }
 \arguments{
 \item{x}{Path of a csv file exported from Facepager. Can be a URL.}

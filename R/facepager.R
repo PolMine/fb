@@ -5,7 +5,7 @@
 #' @export
 #' @importFrom tibble as_tibble
 #' @importFrom utils read.csv2
-fp_read_csv <- function(x){
+fp_read_csv <- function(x, cols = fp_colnames){
   if (length(x) > 1L){
     li <- lapply(x, fp_read_csv)
     data <- do.call(rbind, li)
@@ -19,17 +19,39 @@ fp_read_csv <- function(x){
     doc_min[["updated_time"]] <- as.Date(doc_min[["updated_time"]])
     doc_min[["Message"]] <- doc_min[["message"]]
     doc_min[["Facebook Id"]] <- gsub("^(\\d+)_.*$", "\\1", doc_min[["object_id"]])
-    doc_min[["User Name"]] <- doc_min$user_name
     doc_min[["Post Id"]] <- gsub("^\\d+_(\\d+)$", "\\1", doc_min[["object_id"]])
     doc_min[["URL"]] <- sprintf(
       "https://www.facebook.com/%s/posts/%s",
       doc_min[["Facebook Id"]],
       doc_min[["Post Id"]]
     )
-    doc_min <- doc_min[, c("User Name", "URL", "date", "Message")]
     retval <- historical_report_purge(doc_min)
+    retval <- retval[, cols]
     return(as_tibble(retval))
   } else {
     stop("invalid input")
   }
 }
+
+#' Column names of Facepager output 
+#' @export
+fp_colnames <- c(
+  "level",
+  "id",
+  "parent_id",
+  "object_id",
+  "object_type",
+  "object_key",
+  "query_status",
+  "query_time",
+  "query_type",
+  "message",
+  "created_time",
+  "updated_time",
+  "error.message",
+  "date",
+  "Message",
+  "Facebook Id",
+  "Post Id",
+  "URL"
+)
