@@ -1,0 +1,18 @@
+---
+title: "Introducing fb"
+author: "Andreas Blaette (andreas.blaette@uni-due.de)"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introducing fb}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r load_libs, warning = FALSE}
+library(fb)
+```
+
+This vignette is an empty promise!

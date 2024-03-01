@@ -1,0 +1,41 @@
+Package: fb
+Type: Package
+Title: Functionality for processing Facebook data
+Version: 0.1.0
+Date: 2024-03-01
+Authors@R: c(
+  person("Andreas", "Blaette", role = c("aut", "cre"), email = "andreas.blaette@uni-due.de")
+  )
+Depends:
+  R (>= 3.5.0)
+Imports:
+  readr,
+  cli,
+  aws.s3,
+  httr,
+  tibble
+Suggests:
+  knitr,
+  rmarkdown,
+  testthat,
+  polmineR,
+  dplyr,
+  tidyr,
+  lubridate,
+  kableExtra
+VignetteBuilder: knitr
+Description: Processing Facebook data.
+BugReports: https://github.com/PolMine/fb/issues
+License: GPL-3
+URL: hlttps://github.com/PolMine/fb
+Encoding: UTF-8
+LazyData: yes
+LazyDataCompression: xz
+Collate: 
+  'fb-package.R'
+  'historical_report.R'
+  'api.R'
+  'facepager.R'
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Config/testthat/edition: 3

@@ -1,0 +1,15 @@
+---
+title: Facebook PartyPages R Data Package
+output: github_document
+editor_options: 
+  chunk_output_type: console
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+## Installation 
+
+```{r, eval = FALSE}
+devtools::install_github("PolMine/fb")
+```
+
