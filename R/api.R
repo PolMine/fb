@@ -10,6 +10,7 @@
 #' @importFrom cli cli_progress_step cli_progress_done cli_alert_success
 #'   cli_alert_danger
 #' @export
+#' @rdname ct_api
 #' @examples
 #' token <- readLines("~/.crowdtangle/token")
 #' y <- ct_get(
@@ -93,10 +94,9 @@ ct_get <- function(token, ids, sort_by = "date", count = 100, from, to){
 }
 
 
-#' Get lists saved at Dashboard.
-#' 
-#' @param token The CrowdTangle token.
+#' @details `ct_lists()` - get lists saved at Dashboard.
 #' @export
+#' @rdname ct_api
 #' @examples
 #' token <- readLines("~/.crowdtangle/token")
 #' ct_lists(token)
@@ -109,11 +109,12 @@ ct_lists <- function(token){
 }
 
 
-#' Retrieve the accounts for a given list
-#' 
-#' See \url{https://github.com/CrowdTangle/API/wiki/List-Accounts}.
-#' 
+#' @details `ct_list_accounts()` - retrieve the accounts for a given list, see
+#' \url{https://github.com/CrowdTangle/API/wiki/List-Accounts}.
+#' @param list_id ID of the list for which to get accounts.
+#' @param offset Start from this offset position.
 #' @export
+#' @rdname ct_api
 #' @importFrom dplyr bind_rows
 #' @examples
 #' token <- readLines("~/.crowdtangle/token")

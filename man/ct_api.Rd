@@ -2,9 +2,15 @@
 % Please edit documentation in R/api.R
 \name{ct_get}
 \alias{ct_get}
+\alias{ct_lists}
+\alias{ct_list_accounts}
 \title{Retrieve posts from CrowdTangle API}
 \usage{
 ct_get(token, ids, sort_by = "date", count = 100, from, to)
+
+ct_lists(token)
+
+ct_list_accounts(token, list_id, offset = 0L)
 }
 \arguments{
 \item{token}{Credentials/token.}
@@ -18,9 +24,19 @@ ct_get(token, ids, sort_by = "date", count = 100, from, to)
 \item{from}{Begin date, format YYYY-MM-DD.}
 
 \item{to}{End date, format YYYY-MM-DD.}
+
+\item{list_id}{ID of the list for which to get accounts.}
+
+\item{offset}{Start from this offset position.}
 }
 \description{
 Retrieve posts from CrowdTangle API
+}
+\details{
+\code{ct_lists()} - get lists saved at Dashboard.
+
+\code{ct_list_accounts()} - retrieve the accounts for a given list, see
+\url{https://github.com/CrowdTangle/API/wiki/List-Accounts}.
 }
 \examples{
 token <- readLines("~/.crowdtangle/token")
@@ -30,4 +46,8 @@ y <- ct_get(
   from = "2021-01-01",
   to = "2021-01-31"
 )
+token <- readLines("~/.crowdtangle/token")
+ct_lists(token)
+token <- readLines("~/.crowdtangle/token")
+ct_list_accounts(token, list_id = 1771322)
 }

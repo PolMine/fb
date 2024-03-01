@@ -1,5 +1,5 @@
 ---
-title: Facebook PartyPages R Data Package
+title: fb R Package
 output: github_document
 editor_options: 
   chunk_output_type: console

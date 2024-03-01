@@ -11,18 +11,14 @@ Depends:
 Imports:
   readr,
   cli,
-  aws.s3,
   httr,
-  tibble
+  tibble,
+  dplyr,
+  aws.s3
 Suggests:
   knitr,
   rmarkdown,
-  testthat,
-  polmineR,
-  dplyr,
-  tidyr,
-  lubridate,
-  kableExtra
+  testthat
 VignetteBuilder: knitr
 Description: Processing Facebook data.
 BugReports: https://github.com/PolMine/fb/issues

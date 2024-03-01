@@ -19,12 +19,7 @@ fp_read_csv <- function(x){
     doc_min[["updated_time"]] <- as.Date(doc_min[["updated_time"]])
     doc_min[["Message"]] <- doc_min[["message"]]
     doc_min[["Facebook Id"]] <- gsub("^(\\d+)_.*$", "\\1", doc_min[["object_id"]])
-    doc_min[["User Name"]] <- merge(
-      doc_min,
-      PartyPages::partypages_mapping,
-      by.x = "Facebook Id",
-      by.y = "facebook_id", 
-    )$user_name
+    doc_min[["User Name"]] <- doc_min$user_name
     doc_min[["Post Id"]] <- gsub("^\\d+_(\\d+)$", "\\1", doc_min[["object_id"]])
     doc_min[["URL"]] <- sprintf(
       "https://www.facebook.com/%s/posts/%s",

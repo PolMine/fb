@@ -1,4 +1,4 @@
-Facebook PartyPages R Data Package
+fb R Package
 ================
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
