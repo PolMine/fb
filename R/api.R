@@ -6,6 +6,8 @@
 #' @param ids Id of saved post lists of the dashboard associated with the token.
 #' @param sort_by Defaults to "date".
 #' @param count An integer value, max 100.
+#' @param sleep Passed into `Sys.sleep()` between API requests to conform to 
+#'   rate limit. Defaults to 10 as there is a maximum of 6 calls per minute.
 #' @importFrom httr GET content
 #' @importFrom cli cli_progress_step cli_progress_done cli_alert_success
 #'   cli_alert_danger
@@ -19,7 +21,7 @@
 #'   from = "2021-01-01",
 #'   to = "2021-01-31"
 #' )
-ct_get <- function(token, ids, sort_by = "date", count = 100, from, to){
+ct_get <- function(token, ids, sort_by = "date", count = 100, from, to, sleep = 10){
   
   # higher value avoids too many requests HTTP error; 100 is max!
   if (count > 100) warning("Argument `count` may not be higher than 100.")
@@ -55,8 +57,8 @@ ct_get <- function(token, ids, sort_by = "date", count = 100, from, to){
     tablist <- lapply(
       seq_along(page[[2]][[1]]),
       function(i){
+        x <- page[[2]][[1]][[i]]
         if ("message" %in% names(x)){
-          x <- page[[2]][[1]][[i]]
           if (is.null(x[["message"]])) return(NULL)
           df <- data.frame(
             platformId = x[["platformId"]],
@@ -85,7 +87,7 @@ ct_get <- function(token, ids, sort_by = "date", count = 100, from, to){
         page <- GET(next_page) |> content()
         cli::cli_progress_done()
         i <- i + 1L
-        Sys.sleep(2)
+        Sys.sleep(sleep)
       } else {
         break
       }

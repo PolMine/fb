@@ -2,6 +2,8 @@
 
 - Improved robustness of ct_get(): Skip posts without message, NA if
 account_platorm_id is NULL
+- `ct_get()` has new argument `sleep` to manually control time between API 
+requests. Defaults to 10 to conform to rate limit of 6 requests per minute.
 
 ## v0.1.9
 

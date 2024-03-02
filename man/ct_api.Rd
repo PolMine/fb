@@ -6,7 +6,7 @@
 \alias{ct_list_accounts}
 \title{Retrieve posts from CrowdTangle API}
 \usage{
-ct_get(token, ids, sort_by = "date", count = 100, from, to)
+ct_get(token, ids, sort_by = "date", count = 100, from, to, sleep = 10)
 
 ct_lists(token)
 
@@ -24,6 +24,9 @@ ct_list_accounts(token, list_id, offset = 0L)
 \item{from}{Begin date, format YYYY-MM-DD.}
 
 \item{to}{End date, format YYYY-MM-DD.}
+
+\item{sleep}{Passed into \code{Sys.sleep()} between API requests to conform to
+rate limit. Defaults to 10 as there is a maximum of 6 calls per minute.}
 
 \item{list_id}{ID of the list for which to get accounts.}
 
