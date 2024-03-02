@@ -53,10 +53,11 @@ ct_get <- function(token, ids, sort_by = "date", count = 100, from, to){
     }
     
     tablist <- lapply(
-      page[[2]][[1]],
-      function(x){
+      seq_along(page[[2]][[1]]),
+      function(i){
         if ("message" %in% names(x)){
-          x_min <- x[c("platformId", "date", "updated", "message")]
+          x <- page[[2]][[1]][[i]]
+          if (is.null(x[["message"]])) return(NULL)
           df <- data.frame(
             platformId = x[["platformId"]],
             date = x[["date"]],
@@ -65,7 +66,10 @@ ct_get <- function(token, ids, sort_by = "date", count = 100, from, to){
             account_id = x[["account"]][["id"]],
             account_name = x[["account"]][["name"]],
             account_handle = x[["account"]][["handle"]],
-            account_platform_id = x[["account"]][["platformId"]]
+            account_platform_id = if (is.null(x[["account"]][["platformId"]]))
+              NA
+            else
+              x[["account"]][["platformId"]]
           )
         } else {
           return(NULL)
