@@ -11,7 +11,7 @@
 #' @importFrom readr read_delim cols col_character col_integer
 #' @importFrom aws.s3 get_object
 #' @importFrom cli cli_progress_step cli_progress_done cli_alert_info
-#'   cli_alert_success
+#'   cli_alert_success cli_alert_warning
 #' @export
 #' @rdname historical_report
 #' @examples
@@ -21,7 +21,7 @@
 #' tbl <- historical_report_purge(tbl)
 ct_read_csv <- function(x, verbose = TRUE, ...){
   if (length(x) > 1L){
-    li <- lapply(x, ct_read_csv)
+    li <- lapply(x, ct_read_csv, ...)
     data <- do.call(rbind, li)
     return(data)
   } else if (length(x) == 1L){
@@ -38,18 +38,20 @@ ct_read_csv <- function(x, verbose = TRUE, ...){
       )
       if (!is.na(as.Date(from)) && !is.na(as.Date(to))){
         cli_alert_info(
-          "requested coverage according to filname: {.val {as.Date(from)}} to {.val {as.Date(to)}}"
+          "coverage according to filname: {.val {as.Date(from)}} to {.val {as.Date(to)}}"
         )
       }
     }
     
     if (!file.exists(x)){
       x <- get_object(object = x, ...)
-      columns <- strsplit(strsplit(rawToChar(x), "\n")[[1]][[1]], ",")[[1]]
+      firstline <- strsplit(rawToChar(x), "\n")[[1]][[1]]
     } else {
-      columns <- strsplit(readLines(x, n = 1L), ",")[[1]]
+      firstline <- readLines(x, n = 1L)
     }
-    
+    delim <- if (";" %in% unique(strsplit(firstline, "")[[1]])) ";" else ","
+    columns <- strsplit(firstline, split = delim)[[1]]
+
     if (verbose) cli_progress_step("read input file")
     col_spec <- cols(
       `Facebook Id` = col_character(),
@@ -65,10 +67,11 @@ ct_read_csv <- function(x, verbose = TRUE, ...){
     # we want the function to work for old data
     overperforming_col <- grep("Overperforming Score", columns, value = TRUE)
     col_spec$cols[[gsub("\u2014", "-", overperforming_col)]] <- col_character()
+    if (!"Sponsor Category" %in% columns) col_spec$cols[["Sponsor Category"]] <- NULL
     
     data <- readr::read_delim(
       x,
-      delim = ",",
+      delim = delim,
       col_types = col_spec,
       name_repair = function(x) gsub("\u2014", "-", x),
       na = c("", "N/A")
@@ -76,19 +79,28 @@ ct_read_csv <- function(x, verbose = TRUE, ...){
     if (verbose) cli_progress_done()
     if (verbose) cli_alert_info("read historical report with {.val {nrow(data)}} posts")
     
-    if (all(colnames(data) == historical_report_colnames)){
-      if (verbose) cli_alert_success("colnames checked and ok")
+    if ("Created" %in% colnames(data))
+      colnames(data) <- gsub("^Created$", "Post Created", colnames(data))
+    colnames(data) <- gsub("^Overperforming Score.*$", "Overperforming Score", colnames(data))
+    if (all(colnames(data) %in% historical_report_colnames)){
+      if (verbose) cli_alert_success("colnames known: TRUE")
     } else {
-      warning("colnames do not meet expectations")
+      if (verbose) cli_alert_success("colnames known: FALSE")
+    }
+    
+    missing <- setdiff(historical_report_colnames, colnames(data))
+    if (length(missing) > 0L){
+      if (verbose) cli_alert_warning("missing colnames: {paste(missing, collapse = ', ')}")
     }
     
     if (verbose) cli_progress_step("process column 'Video Length'")
     data[["Video Length"]] <- as.difftime(data[["Video Length"]], format = "%H:%M:%S")
     
     if (verbose) cli_progress_step("process column 'Post Created'")
+    
     data[["Post Created"]] <- as.POSIXct(data[["Post Created"]])
     data[["date"]] <- as.Date(data[["Post Created"]])
-    # data[["Post Created"]] <- NULL
+    
     if (verbose) cli_progress_done()
     if (verbose)
       cli_alert_info("coverage in data: {.val {min(data$date)}} to {.val {max(data$date)}}")
@@ -172,5 +184,5 @@ historical_report_colnames <- c(
   "Sponsor Id",
   "Sponsor Name",
   "Sponsor Category",
-  "Overperforming Score (weighted  -  Likes 1x Shares 1x Comments 1x Love 1x Wow 1x Haha 1x Sad 1x Angry 1x Care 1x )"
+  "Overperforming Score"
 )

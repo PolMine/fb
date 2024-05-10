@@ -4,6 +4,8 @@
 account_platorm_id is NULL
 - `ct_get()` has new argument `sleep` to manually control time between API 
 requests. Defaults to 10 to conform to rate limit of 6 requests per minute.
+- `ct_read_csv()` will recognize whether delim is "," or ";" and is able to 
+digest older historical data.
 
 ## v0.1.9
 
