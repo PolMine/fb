@@ -4,6 +4,7 @@
 \alias{ct_get}
 \alias{ct_lists}
 \alias{ct_list_accounts}
+\alias{ct_post}
 \title{Retrieve posts from CrowdTangle API}
 \usage{
 ct_get(token, ids, sort_by = "date", count = 100, from, to, sleep = 10)
@@ -11,6 +12,8 @@ ct_get(token, ids, sort_by = "date", count = 100, from, to, sleep = 10)
 ct_lists(token)
 
 ct_list_accounts(token, list_id, offset = 0L)
+
+ct_post(token, id, sleep = 10)
 }
 \arguments{
 \item{token}{Credentials/token.}
@@ -31,6 +34,10 @@ rate limit. Defaults to 10 as there is a maximum of 6 calls per minute.}
 \item{list_id}{ID of the list for which to get accounts.}
 
 \item{offset}{Start from this offset position.}
+
+\item{id}{The ID of the post on its platform which corresponds to the
+platformId property of the Post object. This is provided as a path variable
+in the URL. See examples for examples.}
 }
 \description{
 Retrieve posts from CrowdTangle API
@@ -40,6 +47,9 @@ Retrieve posts from CrowdTangle API
 
 \code{ct_list_accounts()} - retrieve the accounts for a given list, see
 \url{https://github.com/CrowdTangle/API/wiki/List-Accounts}.
+
+\code{ct_post()} - get specific post, see
+\url{https://github.com/CrowdTangle/API/wiki/Posts#get-postid}.
 }
 \examples{
 token <- readLines("~/.crowdtangle/token")
@@ -53,4 +63,17 @@ token <- readLines("~/.crowdtangle/token")
 ct_lists(token)
 token <- readLines("~/.crowdtangle/token")
 ct_list_accounts(token, list_id = 1771322)
+token <- readLines("~/.crowdtangle/token")
+ct_post(token = token, id = "100043924819479_1001812481292903") # is available
+ct_post(token = token, id = "100043924819479_983917869749031") # is gone 
+
+\dontrun{
+ct_post(
+  token = token, 
+  id = c(
+    "100044285296893_951352766350891",
+    "100050313077113_959694992384261"
+   )
+)
+}
 }

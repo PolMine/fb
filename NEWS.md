@@ -1,3 +1,7 @@
+## v0.1.10
+
+- New function `ct_post()` to get individual posts.
+
 ## v0.1.9.9001
 
 - Improved robustness of ct_get(): Skip posts without message, NA if

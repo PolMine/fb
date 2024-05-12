@@ -1,6 +1,7 @@
 #' Read Facepager CSV files
 #' 
 #' @param x Path of a csv file exported from Facepager. Can be a URL.
+#' @param cols Columns to include in the output. Defaults to `fp_colnames`.
 #' @return A `tibble` with columns "User Name", "URL", "date" and "Message".
 #' @export
 #' @importFrom tibble as_tibble

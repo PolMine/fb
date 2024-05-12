@@ -1,3 +1,29 @@
+.get_post_data <- function(i, content){
+  x <- content[[2]][[1]][[i]]
+  if ("message" %in% names(x)){
+    if (is.null(x[["message"]])) return(NULL)
+    df <- data.frame(
+      platformId = x[["platformId"]],
+      date = x[["date"]],
+      updated = x[["updated"]],
+      message = x[["message"]],
+      account_id = x[["account"]][["id"]],
+      account_name = x[["account"]][["name"]],
+      account_handle = if (is.null(x[["account"]][["handle"]]))
+        NA
+      else
+        x[["account"]][["handle"]],
+      account_platform_id = if (is.null(x[["account"]][["platformId"]]))
+        NA
+      else
+        x[["account"]][["platformId"]]
+    )
+  } else {
+    return(NULL)
+  }
+  df
+}
+
 #' Retrieve posts from CrowdTangle API
 #' 
 #' @param from Begin date, format YYYY-MM-DD.
@@ -153,5 +179,50 @@ ct_list_accounts <- function(token, list_id, offset = 0L){
     )
   }
   
+  retval
+}
+
+#' @param id The ID of the post on its platform which corresponds to the
+#'   platformId property of the Post object. This is provided as a path variable
+#'   in the URL. See examples for examples.
+#' @details `ct_post()` - get specific post, see
+#'   \url{https://github.com/CrowdTangle/API/wiki/Posts#get-postid}.
+#' @export
+#' @rdname ct_api
+#' @examples
+#' token <- readLines("~/.crowdtangle/token")
+#' ct_post(token = token, id = "100043924819479_1001812481292903") # is available
+#' ct_post(token = token, id = "100043924819479_983917869749031") # is gone 
+#' 
+#' \dontrun{
+#' ct_post(
+#'   token = token, 
+#'   id = c(
+#'     "100044285296893_951352766350891",
+#'     "100050313077113_959694992384261"
+#'    )
+#' )
+#' }
+#' @importFrom cli cli_alert_info
+ct_post <- function(token, id, sleep = 10){
+  if (length(id) == 1L){
+    cli_alert_info("retrieve post data for platformId {.val {id[[1]]}}")
+    request <- GET(
+      sprintf("https://api.crowdtangle.com/post/%s", id),
+      query = list(token = token)
+    )
+    content <- content(request)
+    retval <- .get_post_data(i = 1, content = content(request))
+  } else {
+    post_data_list <- lapply(
+      seq_along(id),
+      function(i){
+        post <- ct_post(token = token, id = id[[i]])
+        if (i < length(id)) Sys.sleep(time = sleep)
+        post
+      }
+    )
+    retval <- bind_rows(post_data_list)
+  }
   retval
 }

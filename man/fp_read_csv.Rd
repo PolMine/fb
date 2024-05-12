@@ -8,6 +8,8 @@ fp_read_csv(x, cols = fp_colnames)
 }
 \arguments{
 \item{x}{Path of a csv file exported from Facepager. Can be a URL.}
+
+\item{cols}{Columns to include in the output. Defaults to \code{fp_colnames}.}
 }
 \value{
 A \code{tibble} with columns "User Name", "URL", "date" and "Message".
