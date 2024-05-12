@@ -57,7 +57,7 @@ y <- ct_get(
   token = token,
   ids = 1771322,
   from = "2021-01-01",
-  to = "2021-01-31"
+  to = "2021-01-10"
 )
 token <- readLines("~/.crowdtangle/token")
 ct_lists(token)
@@ -65,7 +65,7 @@ token <- readLines("~/.crowdtangle/token")
 ct_list_accounts(token, list_id = 1771322)
 token <- readLines("~/.crowdtangle/token")
 ct_post(token = token, id = "100043924819479_1001812481292903") # is available
-ct_post(token = token, id = "100043924819479_983917869749031") # is gone 
+ct_post(token = token, id = "100044285296893_951352766350891") # is gone 
 
 \dontrun{
 ct_post(

@@ -1,3 +1,7 @@
+## v0.2.0
+
+- `ct_post()` and `ct_get()` retrieve post statistics (actual and expected) and add further columns to resulting table.
+
 ## v0.1.10
 
 - New function `ct_post()` to get individual posts.

@@ -1,9 +1,13 @@
+#' @importFrom tibble as_tibble
 .get_post_data <- function(i, content){
   x <- content[[2]][[1]][[i]]
   if ("message" %in% names(x)){
     if (is.null(x[["message"]])) return(NULL)
     df <- data.frame(
       platformId = x[["platformId"]],
+      post_url = x[["postUrl"]],
+      score = x[["score"]],
+      subcriber_count = x[["subscriberCount"]],
       date = x[["date"]],
       updated = x[["updated"]],
       message = x[["message"]],
@@ -18,10 +22,33 @@
       else
         x[["account"]][["platformId"]]
     )
+    
+    if (!is.null(x[["statistics"]])){
+      if (!is.null(x[["statistics"]][["actual"]])){
+        stats_actual <- data.frame(x[["statistics"]][["actual"]])
+        colnames(stats_actual) <- paste(
+          "stats_actual",
+          colnames(stats_actual),
+          sep = "_"
+        )
+        df <- cbind(df, stats_actual)
+      }
+      
+      if (!is.null(x[["statistics"]][["actual"]])){
+        stats_expected <- data.frame(x[["statistics"]][["expected"]])
+        colnames(stats_expected) <- paste(
+          "statistics_expected",
+          colnames(stats_expected),
+          sep = "_"
+        )
+        df <- cbind(df, stats_expected)
+      }
+    }
+
   } else {
     return(NULL)
   }
-  df
+  as_tibble(df)
 }
 
 #' Retrieve posts from CrowdTangle API
@@ -45,7 +72,7 @@
 #'   token = token,
 #'   ids = 1771322,
 #'   from = "2021-01-01",
-#'   to = "2021-01-31"
+#'   to = "2021-01-10"
 #' )
 ct_get <- function(token, ids, sort_by = "date", count = 100, from, to, sleep = 10){
   
@@ -75,35 +102,15 @@ ct_get <- function(token, ids, sort_by = "date", count = 100, from, to, sleep = 
     if (page[[1]] == 200){
       cli::cli_alert_success("HTTP Status: OK")
     } else if (page[[1]] == 429){
-      cli::cli_alert_danger("HTTP Status: 429/Too Many Requests (rate limit met)")
+      cli::cli_alert_danger(
+        "HTTP Status: 429/Too Many Requests (rate limit met)"
+      )
     } else {
       cli::cli_alert_danger("unknown HTTP Status")
     }
     
-    tablist <- lapply(
-      seq_along(page[[2]][[1]]),
-      function(i){
-        x <- page[[2]][[1]][[i]]
-        if ("message" %in% names(x)){
-          if (is.null(x[["message"]])) return(NULL)
-          df <- data.frame(
-            platformId = x[["platformId"]],
-            date = x[["date"]],
-            updated = x[["updated"]],
-            message = x[["message"]],
-            account_id = x[["account"]][["id"]],
-            account_name = x[["account"]][["name"]],
-            account_handle = x[["account"]][["handle"]],
-            account_platform_id = if (is.null(x[["account"]][["platformId"]]))
-              NA
-            else
-              x[["account"]][["platformId"]]
-          )
-        } else {
-          return(NULL)
-        }
-      }
-    )
+    tablist <- lapply(seq_along(page[[2]][[1]]), .get_post_data, content = page)
+    
     tab[[i]] <- do.call(rbind, tablist)
       
     if (length(page[[2]]) > 1L){
@@ -192,7 +199,7 @@ ct_list_accounts <- function(token, list_id, offset = 0L){
 #' @examples
 #' token <- readLines("~/.crowdtangle/token")
 #' ct_post(token = token, id = "100043924819479_1001812481292903") # is available
-#' ct_post(token = token, id = "100043924819479_983917869749031") # is gone 
+#' ct_post(token = token, id = "100044285296893_951352766350891") # is gone 
 #' 
 #' \dontrun{
 #' ct_post(
@@ -211,7 +218,6 @@ ct_post <- function(token, id, sleep = 10){
       sprintf("https://api.crowdtangle.com/post/%s", id),
       query = list(token = token)
     )
-    content <- content(request)
     retval <- .get_post_data(i = 1, content = content(request))
   } else {
     post_data_list <- lapply(
